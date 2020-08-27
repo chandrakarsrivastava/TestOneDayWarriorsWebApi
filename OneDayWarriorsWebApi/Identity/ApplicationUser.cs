@@ -15,10 +15,8 @@ namespace OneDayWarriorsWebApi.Identity
         public string LastName { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string Gender { get; set; }
-        //public int CountryID { get; set; }
         public bool ReceiveNewsLetters { get; set; }
         public string ImagePath { get; set; }
-        //public string Base64Image { get; set; }
     }
 }
 

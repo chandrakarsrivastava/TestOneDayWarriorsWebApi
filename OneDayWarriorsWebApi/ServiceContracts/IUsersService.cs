@@ -15,6 +15,5 @@ namespace OneDayWarriorsWebApi.ServiceContracts
         Task<ApplicationUser> Register(SignUpViewModel signUpViewModel);
         Task<ApplicationUser> GetUserByEmail(string Email);
 
-
     }
 }
