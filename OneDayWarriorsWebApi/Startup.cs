@@ -57,8 +57,6 @@ namespace OneDayWarriorsWebApi
 
             services.AddScoped<ApplicationRoleStore>();
             services.AddScoped<ApplicationUserStore>();
-
-            //Configure JWT Authentication
             
             var appSettingsSection = _configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
