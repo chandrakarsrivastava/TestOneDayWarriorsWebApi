@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace OneDayWarriorsWebApi
 {
-    //hello
+    //hello 2
     public class Program
     {
         public static void Main(string[] args)
