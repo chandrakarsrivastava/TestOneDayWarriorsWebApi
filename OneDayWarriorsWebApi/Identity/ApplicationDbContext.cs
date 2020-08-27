@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using OneDayWarriorsWebApi.Models;
+//using OneDayWarriorsWebApi.Models;
 
 namespace OneDayWarriorsWebApi.Identity
 {

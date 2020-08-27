@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using OneDayWarriorsWebApi.Models;
+//using OneDayWarriorsWebApi.Models;
 using OneDayWarriorsWebApi.ServiceContracts;
 using OneDayWarriorsWebApi.Identity;
 using OneDayWarriorsWebApi.ViewModels;
