@@ -7,8 +7,10 @@ namespace OneDayWarriorsWebApi.Identity
 {
     public class ApplicationUserStore : UserStore<ApplicationUser>
     {
+        //test
         public ApplicationUserStore(ApplicationDbContext applicationDbContext) : base(applicationDbContext)
         {
+
         }
     }
 }
