@@ -2,6 +2,6 @@
 {
     public interface IMessageHelper
     {
-        public string GetMessage(string messageKey);
+        string GetMessage(string messageKey);
     }
 }

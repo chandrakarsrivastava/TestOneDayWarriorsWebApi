@@ -6,7 +6,7 @@ namespace OneDayWarriorsWebApi.Logging
 {
     public interface INLogger
     {
-        public void LogInformation(string errorMessage);
-        public void LogError(string informationMessage);
+        void LogInformation(string errorMessage);
+        void LogError(string informationMessage);
     }
 }
