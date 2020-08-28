@@ -149,11 +149,11 @@ namespace OneDayWarriorsWebApi
                     await userManager.AddToRoleAsync(await userManager.FindByNameAsync("admin"), "Admin");
                 }
 
-                //Create Employee Role
-                if (!(await roleManager.RoleExistsAsync("Employee")))
+                //Create SiteUser Role
+                if (!(await roleManager.RoleExistsAsync("SiteUser")))
                 {
                     var role = new ApplicationRole();
-                    role.Name = "Employee";
+                    role.Name = "SiteUser";
                     await roleManager.CreateAsync(role);
                 }
             }
