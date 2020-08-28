@@ -36,7 +36,7 @@ namespace OneDayWarriorsWebApi.Service.Services
                 var applicationUser = await _userRepository.FindByNameAsync(userLogin.Username);
                 applicationUser.PasswordHash = null;
                 if (await this._userRepository.IsInRoleAsync(applicationUser, "Admin")) applicationUser.Role = "Admin";
-                else if (await this._userRepository.IsInRoleAsync(applicationUser, "Employee")) applicationUser.Role = "Employee";
+                else if (await this._userRepository.IsInRoleAsync(applicationUser, "SiteUser")) applicationUser.Role = "SiteUser";
 
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var key = System.Text.Encoding.ASCII.GetBytes(_appSettings.Secret);
@@ -71,13 +71,13 @@ namespace OneDayWarriorsWebApi.Service.Services
             applicationUser.PhoneNumber = userSignup.Mobile;
             applicationUser.ReceiveNewsLetters = userSignup.ReceiveNewsLetters;
             applicationUser.Gender = userSignup.Gender;
-            applicationUser.Role = "Employee";
+            applicationUser.Role = "SiteUser";
             applicationUser.UserName = userSignup.Email;
 
             var result = await _userRepository.CreateAsync(applicationUser, userSignup.Password);
             if (result.Succeeded)
             {
-                if ((await _userRepository.AddToRoleAsync(userSignup.Email, "Employee")).Succeeded)
+                if ((await _userRepository.AddToRoleAsync(userSignup.Email, "SiteUser")).Succeeded)
                 {
                     var result2 = await _userRepository.PasswordSignInAsync(userSignup.Email, userSignup.Password, false, false);
                     if (result2.Succeeded)
