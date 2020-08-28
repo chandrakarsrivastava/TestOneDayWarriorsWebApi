@@ -1,9 +1,7 @@
-﻿//using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using OneDayWarriorsWebApi.Entities.Identity;
 
-namespace OneDayWarriorsWebApi.Identity
+namespace OneDayWarriorsWebApi.Data
 {
     public class ApplicationUserStore : UserStore<ApplicationUser>
     {
@@ -14,5 +12,3 @@ namespace OneDayWarriorsWebApi.Identity
         }
     }
 }
-
-

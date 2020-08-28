@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-//using OneDayWarriorsWebApi.Models;
+using OneDayWarriorsWebApi.Entities.Identity;
 
-namespace OneDayWarriorsWebApi.Identity
+namespace OneDayWarriorsWebApi.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
@@ -14,7 +11,7 @@ namespace OneDayWarriorsWebApi.Identity
         }
 
         public DbSet<ApplicationRole> ApplicationRoles { get; set; }
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -22,5 +19,3 @@ namespace OneDayWarriorsWebApi.Identity
         }
     }
 }
-
-

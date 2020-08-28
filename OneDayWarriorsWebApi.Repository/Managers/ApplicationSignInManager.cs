@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OneDayWarriorsWebApi.Entities.Identity;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
-namespace OneDayWarriorsWebApi.Identity
+namespace OneDayWarriorsWebApi.Repository.Managers
 {
     public class ApplicationSignInManager : SignInManager<ApplicationUser>
     {
@@ -17,8 +19,8 @@ namespace OneDayWarriorsWebApi.Identity
             ILogger<ApplicationSignInManager> logger,
             IAuthenticationSchemeProvider schemes,
             IUserConfirmation<ApplicationUser> app
-            
-            ) 
+
+            )
             : base(applicationUserManager,
                   httpContextAccessor,
                   userClaimsPrincipalFactory,

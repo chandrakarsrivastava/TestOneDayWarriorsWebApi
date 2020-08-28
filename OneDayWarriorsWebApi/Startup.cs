@@ -1,26 +1,24 @@
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.IdentityModel.Tokens;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using OneDayWarriorsWebApi.Identity;
-using OneDayWarriorsWebApi.ServiceContracts;
-using OneDayWarriorsWebApi.Services;
+using OneDayWarriorsWebApi.Data;
+using OneDayWarriorsWebApi.Entities.Identity;
+using OneDayWarriorsWebApi.Logging;
+using OneDayWarriorsWebApi.Repository.Contracts;
+using OneDayWarriorsWebApi.Repository.Implementations;
+using OneDayWarriorsWebApi.Repository.Managers;
+using OneDayWarriorsWebApi.Service.ServiceContracts;
+using OneDayWarriorsWebApi.Service.Services;
+using OneDayWarriorsWebApi.Utilities;
 using ServiceStack.Configuration;
+using System.IO;
 using SymmetricSecurityKey = Microsoft.IdentityModel.Tokens.SymmetricSecurityKey;
 
 namespace OneDayWarriorsWebApi
@@ -45,6 +43,9 @@ namespace OneDayWarriorsWebApi
             services.AddTransient<RoleManager<ApplicationRole>, ApplicationRoleManager>();
             services.AddTransient<IUserStore<ApplicationUser>, ApplicationUserStore>();
             services.AddTransient<IUsersService, UsersService>();
+            services.AddTransient<IUserRepository, UserRepository>();
+            services.AddSingleton<INLogger, NLogger>();
+            services.AddSingleton<IMessageHelper, MessageHelper>();
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -59,8 +60,8 @@ namespace OneDayWarriorsWebApi
             services.AddScoped<ApplicationUserStore>();
             
             var appSettingsSection = _configuration.GetSection("AppSettings");
-            services.Configure<AppSettings>(appSettingsSection);
-            var appSettings = appSettingsSection.Get<AppSettings>();
+            services.Configure<Utilities.AppSettings>(appSettingsSection);
+            var appSettings = appSettingsSection.Get<Utilities.AppSettings>();
             var key = System.Text.Encoding.ASCII.GetBytes(appSettings.Secret);
             services.AddAuthentication(x =>
             {
@@ -87,7 +88,7 @@ namespace OneDayWarriorsWebApi
 
             services.AddCors(options => options.AddPolicy("ApiCorsPolicy", build =>
             {
-                build.WithOrigins("http://localhost:4200")
+                build.WithOrigins(_configuration["AllowedOrigin:Origin"])
                      .AllowAnyMethod()
                      .AllowAnyHeader();
             }));
@@ -107,7 +108,7 @@ namespace OneDayWarriorsWebApi
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseMvc();
-
+           
 
             app.UseStaticFiles(new StaticFileOptions()
             {

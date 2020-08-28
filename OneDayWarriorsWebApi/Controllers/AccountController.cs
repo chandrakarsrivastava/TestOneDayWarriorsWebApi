@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Antiforgery;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
-using OneDayWarriorsWebApi.Identity;
-using OneDayWarriorsWebApi.ServiceContracts;
-using OneDayWarriorsWebApi.ViewModels;
 using MvcTaskManager.ViewModels;
+using OneDayWarriorsWebApi.Data;
+using OneDayWarriorsWebApi.Entities.Account;
+using OneDayWarriorsWebApi.Logging;
+using OneDayWarriorsWebApi.Service.ServiceContracts;
+using OneDayWarriorsWebApi.Utilities;
+using OneDayWarriorsWebApi.ViewModels;
+using System.Threading.Tasks;
 
 namespace OneDayWarriorsWebApi.Controllers
 {
@@ -21,30 +16,37 @@ namespace OneDayWarriorsWebApi.Controllers
     {
         private readonly IUsersService _usersService;
         private readonly IAntiforgery _antiforgery;
-        private readonly ApplicationSignInManager _applicationSignInManager;
-        private readonly ApplicationDbContext db;
-        private readonly ApplicationUserManager applicationUserManager;
+        private readonly INLogger _logger;
+        private readonly IMessageHelper _messageHelper;
 
-        public AccountController(IUsersService usersService, ApplicationSignInManager applicationSignManager, IAntiforgery antiforgery, ApplicationDbContext db, ApplicationUserManager applicationUserManager)
+        public AccountController(IUsersService usersService,
+            IAntiforgery antiforgery,
+            INLogger logger,
+            IMessageHelper messageHelper
+            )
         {
             this._usersService = usersService;
-            this._applicationSignInManager = applicationSignManager;
             this._antiforgery = antiforgery;
-            this.db = db;
-            this.applicationUserManager = applicationUserManager;
+            this._logger = logger;
+            this._messageHelper = messageHelper;
         }
 
         [HttpPost]
         [Route("authenticate")]
-        public async Task<IActionResult> Authenticate([FromBody]LoginViewModel loginViewModel)
+        public async Task<IActionResult> Authenticate([FromBody] LoginViewModel loginViewModel)
         {
+            _logger.LogInformation("testing");
             if (loginViewModel.Username != null || loginViewModel.Password != null)
             {
-                var user = await _usersService.Authenticate(loginViewModel);
+                var user = await _usersService.Authenticate(new UserLogin
+                {
+                    Username = loginViewModel.Username,
+                    Password = loginViewModel.Password
+                });
                 if (user == null)
-                    return BadRequest(new { message = "Username or password is incorrect" });
+                    return BadRequest(new { message = _messageHelper.GetMessage("UsernamePasswordIncorrect") });
 
-                HttpContext.User = await _applicationSignInManager.CreateUserPrincipalAsync(user);
+                HttpContext.User = await _usersService.CreateUserPrincipalAsync(user);
                 var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
                 Response.Headers.Add("Access-Control-Expose-Headers", "XSRF-REQUEST-TOKEN");
                 Response.Headers.Add("XSRF-REQUEST-TOKEN", tokens.RequestToken);
@@ -58,14 +60,44 @@ namespace OneDayWarriorsWebApi.Controllers
         }
 
         [HttpPost]
-        [Route("register")]
-        public async Task<IActionResult> Register([FromBody]SignUpViewModel signUpViewModel)
+        [Route("authenticatesocial")]
+        public async Task<IActionResult> AuthenticateSocial([FromBody] LoginSocialViewModel signUpViewModel)
         {
-            var user = await _usersService.Register(signUpViewModel);
+            var user = await _usersService.AuthenticateSocial(new LoginSocial { 
+             Email = signUpViewModel.Email,
+             FirstName = signUpViewModel.FirstName,
+             LastName = signUpViewModel.LastName
+            });
             if (user == null)
                 return BadRequest(new { message = "Invalid Data" });
 
-            HttpContext.User = await _applicationSignInManager.CreateUserPrincipalAsync(user);
+            HttpContext.User = await _usersService.CreateUserPrincipalAsync(user);
+            var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
+            Response.Headers.Add("Access-Control-Expose-Headers", "XSRF-REQUEST-TOKEN");
+            Response.Headers.Add("XSRF-REQUEST-TOKEN", tokens.RequestToken);
+
+            return Ok(user);
+        }
+
+        [HttpPost]
+        [Route("register")]
+        public async Task<IActionResult> Register([FromBody] SignUpViewModel signUpViewModel)
+        {
+            var user = await _usersService.Register(new UserSignup
+            {
+                DateOfBirth = signUpViewModel.DateOfBirth,
+                Email = signUpViewModel.Email,
+                FirstName = signUpViewModel.PersonName.FirstName,
+                LastName = signUpViewModel.PersonName.LastName,
+                Mobile = signUpViewModel.Mobile,
+                Gender = signUpViewModel.Gender,
+                Password = signUpViewModel.Password,
+                ReceiveNewsLetters = signUpViewModel.ReceiveNewsLetters
+            });
+            if (user == null)
+                return BadRequest(new { message = "Invalid Data" });
+
+            HttpContext.User = await _usersService.CreateUserPrincipalAsync(user);
             var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
             Response.Headers.Add("Access-Control-Expose-Headers", "XSRF-REQUEST-TOKEN");
             Response.Headers.Add("XSRF-REQUEST-TOKEN", tokens.RequestToken);

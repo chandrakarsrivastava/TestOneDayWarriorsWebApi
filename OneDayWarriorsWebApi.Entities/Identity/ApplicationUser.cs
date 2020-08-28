@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace OneDayWarriorsWebApi.Identity
+namespace OneDayWarriorsWebApi.Entities.Identity
 {
     public class ApplicationUser : IdentityUser
     {
@@ -15,10 +14,8 @@ namespace OneDayWarriorsWebApi.Identity
         public string LastName { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string Gender { get; set; }
-
         public int CountryID { get; set; }
         public bool ReceiveNewsLetters { get; set; }
         public string ImagePath { get; set; }
     }
 }
-
